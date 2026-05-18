@@ -8,6 +8,8 @@
 
 /* Begin PBXFileReference section */
 		A8903B6E2FBB640A002DADC3 /* MovieAppTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieAppTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8903B7C2FBB659A002DADC3 /* Networking */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Networking; sourceTree = "<group>"; };
+		A8903B7E2FBB7898002DADC3 /* Commons */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Commons; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +34,8 @@
 		A8903B652FBB640A002DADC3 = {
 			isa = PBXGroup;
 			children = (
+				A8903B7E2FBB7898002DADC3 /* Commons */,
+				A8903B7C2FBB659A002DADC3 /* Networking */,
 				A8903B702FBB640A002DADC3 /* MovieAppTask */,
 				A8903B6F2FBB640A002DADC3 /* Products */,
 			);
