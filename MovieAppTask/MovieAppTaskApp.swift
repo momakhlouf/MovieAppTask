@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
-
+import MoviesListModule
 @main
 struct MovieAppTaskApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MoviesView(viewModel: MoviesDIContainer.makeMoviesViewModel())
         }
     }
 }
