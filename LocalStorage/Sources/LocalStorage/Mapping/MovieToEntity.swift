@@ -8,14 +8,15 @@
 import Foundation
 import CoreModels
 
+
 extension Movie {
-    func toEntity() -> MovieEntity {
-        MovieEntity(
-            id: id,
-            title: title,
-            posterPath: posterPath,
-            releaseDate: releaseDate,
-            genreIDs: genreIDs ?? []
-        )
+    func toRealm(page: Int) -> MovieObject {
+        let obj = MovieObject()
+        obj.id = id
+        obj.page = page
+        obj.posterPath = posterPath
+        obj.title = title
+        obj.releaseDate = releaseDate
+        return obj
     }
 }

@@ -11,18 +11,16 @@ import Combine
 import Networking
 import CoreModels
 
-class MockCache: MoviesCacheManagerProtocol {
-    func clear() {
-    }
-    var movies: [Movie] = []
+class MockCache: MoviesCacheProtocol {
     
-    func save(movies: [Movie]) {
-        self.movies = movies
-    }
+    var savedMovies: [Movie] = []
+
+    func saveMovies(_ movies: [Movie], page: Int) {
+        savedMovies.append(contentsOf: movies)
+      }
     
-    func fetchMovies() -> AnyPublisher<[Movie], NetworkError> {
-        Just(movies)
-            .setFailureType(to: NetworkError.self)
+    func getAllMovies() -> AnyPublisher<[CoreModels.Movie], Never> {
+        Just(savedMovies)
             .eraseToAnyPublisher()
     }
 }

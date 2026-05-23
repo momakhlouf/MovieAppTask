@@ -10,15 +10,14 @@ import Commons
 import Networking
 
 public enum MoviesAPIRequest{
-  static func getMovies(page: Int = 1) -> APIRequest<MoviesResponse>{
-      APIRequest(method: .get,
-                 path: .movies(.movies),
-                 queryItems: [URLQueryItem(name: "page", value: "\(page)"),
-                             URLQueryItem(name: "sort_by", value: "popularity.desc"),
-                              URLQueryItem(name: "include_adult", value: "true")
-                             ])
+    static func getMovies(page: Int = 1) -> APIRequest<MoviesResponse>{
+        APIRequest(method: .get,path: .movies(.movies),
+                   queryItems: [.page(page),
+                                .sortBy("popularity.desc"),
+                                .includeAdult(false)
+                   ]
+        )
     }
-    
     static func searchMovies(searchText: String, searchPage: Int) -> APIRequest<MoviesResponse>{
         APIRequest(method: .get ,
                    path: .movies(.search),
@@ -28,5 +27,5 @@ public enum MoviesAPIRequest{
     
     static func getGenres() -> APIRequest<GenresResponse> {
         APIRequest(method: .get, path: .movies(.genres))
-   }
+    }
 }

@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A82067A22FBDBA6400363D6B /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = A82067A12FBDBA6400363D6B /* SDWebImageSwiftUI */; };
-		A82959AD2FBF8ED400BAA8B1 /* CoreModels in Frameworks */ = {isa = PBXBuildFile; productRef = A82959AC2FBF8ED400BAA8B1 /* CoreModels */; };
-		A82959B12FC03BB700BAA8B1 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A82959B02FC03BB700BAA8B1 /* DesignSystem */; };
-		A8903B852FBCA69C002DADC3 /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = A8903B842FBCA69C002DADC3 /* Networking */; };
-		A8903B872FBCA6A2002DADC3 /* Commons in Frameworks */ = {isa = PBXBuildFile; productRef = A8903B862FBCA6A2002DADC3 /* Commons */; };
-		A8903B892FBCA6A5002DADC3 /* MoviesListModule in Frameworks */ = {isa = PBXBuildFile; productRef = A8903B882FBCA6A5002DADC3 /* MoviesListModule */; };
-		A8BF4B4B2FBF0DD200F09379 /* LocalStorage in Frameworks */ = {isa = PBXBuildFile; productRef = A8BF4B4A2FBF0DD200F09379 /* LocalStorage */; };
+		A87F309A2FC187C100A6B04B /* Commons in Frameworks */ = {isa = PBXBuildFile; productRef = A87F30992FC187C100A6B04B /* Commons */; };
+		A87F309C2FC187C600A6B04B /* CoreModels in Frameworks */ = {isa = PBXBuildFile; productRef = A87F309B2FC187C600A6B04B /* CoreModels */; };
+		A87F309E2FC187CB00A6B04B /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = A87F309D2FC187CB00A6B04B /* DesignSystem */; };
+		A87F30A22FC187D400A6B04B /* MovieDetailsModule in Frameworks */ = {isa = PBXBuildFile; productRef = A87F30A12FC187D400A6B04B /* MovieDetailsModule */; };
+		A87F30A42FC187D800A6B04B /* MoviesListModule in Frameworks */ = {isa = PBXBuildFile; productRef = A87F30A32FC187D800A6B04B /* MoviesListModule */; };
+		A87F30A62FC187DD00A6B04B /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = A87F30A52FC187DD00A6B04B /* Networking */; };
+		A8EE5CAB2FC1E5A8002699F6 /* LocalStorage in Frameworks */ = {isa = PBXBuildFile; productRef = A8EE5CAA2FC1E5A8002699F6 /* LocalStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +29,7 @@
 		A8903B822FBB9DAA002DADC3 /* Exceptions for "MovieAppTask" folder in "MovieAppTask" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Modules/MovieDetailsModule,
 				Modules/MoviesListModule,
 			);
 			target = A8903B6D2FBB640A002DADC3 /* MovieAppTask */;
@@ -51,13 +52,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A8BF4B4B2FBF0DD200F09379 /* LocalStorage in Frameworks */,
-				A82067A22FBDBA6400363D6B /* SDWebImageSwiftUI in Frameworks */,
-				A82959B12FC03BB700BAA8B1 /* DesignSystem in Frameworks */,
-				A8903B852FBCA69C002DADC3 /* Networking in Frameworks */,
-				A82959AD2FBF8ED400BAA8B1 /* CoreModels in Frameworks */,
-				A8903B892FBCA6A5002DADC3 /* MoviesListModule in Frameworks */,
-				A8903B872FBCA6A2002DADC3 /* Commons in Frameworks */,
+				A8EE5CAB2FC1E5A8002699F6 /* LocalStorage in Frameworks */,
+				A87F30A42FC187D800A6B04B /* MoviesListModule in Frameworks */,
+				A87F309E2FC187CB00A6B04B /* DesignSystem in Frameworks */,
+				A87F309A2FC187C100A6B04B /* Commons in Frameworks */,
+				A87F30A22FC187D400A6B04B /* MovieDetailsModule in Frameworks */,
+				A87F30A62FC187DD00A6B04B /* Networking in Frameworks */,
+				A87F309C2FC187C600A6B04B /* CoreModels in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,13 +114,13 @@
 			);
 			name = MovieAppTask;
 			packageProductDependencies = (
-				A8903B842FBCA69C002DADC3 /* Networking */,
-				A8903B862FBCA6A2002DADC3 /* Commons */,
-				A8903B882FBCA6A5002DADC3 /* MoviesListModule */,
-				A82067A12FBDBA6400363D6B /* SDWebImageSwiftUI */,
-				A8BF4B4A2FBF0DD200F09379 /* LocalStorage */,
-				A82959AC2FBF8ED400BAA8B1 /* CoreModels */,
-				A82959B02FC03BB700BAA8B1 /* DesignSystem */,
+				A87F30992FC187C100A6B04B /* Commons */,
+				A87F309B2FC187C600A6B04B /* CoreModels */,
+				A87F309D2FC187CB00A6B04B /* DesignSystem */,
+				A87F30A12FC187D400A6B04B /* MovieDetailsModule */,
+				A87F30A32FC187D800A6B04B /* MoviesListModule */,
+				A87F30A52FC187DD00A6B04B /* Networking */,
+				A8EE5CAA2FC1E5A8002699F6 /* LocalStorage */,
 			);
 			productName = MovieAppTask;
 			productReference = A8903B6E2FBB640A002DADC3 /* MovieAppTask.app */;
@@ -150,7 +151,7 @@
 			mainGroup = A8903B652FBB640A002DADC3;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A82067A02FBDBA6400363D6B /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				A8EE5CA52FC1E535002699F6 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A8903B6F2FBB640A002DADC3 /* Products */;
@@ -400,43 +401,42 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A82067A02FBDBA6400363D6B /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+		A8EE5CA52FC1E535002699F6 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
+			repositoryURL = "https://github.com/realm/realm-swift.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.1.4;
+				branch = community;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A82067A12FBDBA6400363D6B /* SDWebImageSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A82067A02FBDBA6400363D6B /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
-			productName = SDWebImageSwiftUI;
-		};
-		A82959AC2FBF8ED400BAA8B1 /* CoreModels */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CoreModels;
-		};
-		A82959B02FC03BB700BAA8B1 /* DesignSystem */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = DesignSystem;
-		};
-		A8903B842FBCA69C002DADC3 /* Networking */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Networking;
-		};
-		A8903B862FBCA6A2002DADC3 /* Commons */ = {
+		A87F30992FC187C100A6B04B /* Commons */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Commons;
 		};
-		A8903B882FBCA6A5002DADC3 /* MoviesListModule */ = {
+		A87F309B2FC187C600A6B04B /* CoreModels */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoreModels;
+		};
+		A87F309D2FC187CB00A6B04B /* DesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DesignSystem;
+		};
+		A87F30A12FC187D400A6B04B /* MovieDetailsModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MovieDetailsModule;
+		};
+		A87F30A32FC187D800A6B04B /* MoviesListModule */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MoviesListModule;
 		};
-		A8BF4B4A2FBF0DD200F09379 /* LocalStorage */ = {
+		A87F30A52FC187DD00A6B04B /* Networking */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Networking;
+		};
+		A8EE5CAA2FC1E5A8002699F6 /* LocalStorage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LocalStorage;
 		};

@@ -33,40 +33,56 @@ public enum NetworkError: Error,Equatable {
         }
     }
 }
-public enum TransportError: Error, Equatable{
+
+public enum TransportError: Error, Equatable {
     case offline, timedOut, dnsFailure, cannotConnect, cancelled, tlsFailure, unknown
-    init(urlError: URLError){
+
+    init(urlError: URLError) {
         switch urlError.code {
-        case .notConnectedToInternet, .networkConnectionLost, .dataNotAllowed:
+        case .notConnectedToInternet,
+             .networkConnectionLost,
+             .dataNotAllowed:
             self = .offline
+
         case .timedOut:
             self = .timedOut
+
         case .dnsLookupFailed, .cannotFindHost:
             self = .dnsFailure
+
         case .cannotConnectToHost:
             self = .cannotConnect
+
         case .cancelled:
             self = .cancelled
-        case .secureConnectionFailed,.serverCertificateHasBadDate, .serverCertificateUntrusted, .serverCertificateHasUnknownRoot, .serverCertificateNotYetValid:
+
+        case .secureConnectionFailed,
+             .serverCertificateHasBadDate,
+             .serverCertificateUntrusted,
+             .serverCertificateHasUnknownRoot,
+             .serverCertificateNotYetValid:
             self = .tlsFailure
+
         default:
             self = .unknown
         }
     }
-    var userMessage: String{
+
+    var userMessage: String {
         switch self {
         case .offline:
-            return "You appeared to be offline. Check your internet connection and try again. "
+            return "You appear to be offline. Check your internet connection and try again."
         case .timedOut:
-            return "Time out"
+            return "The request timed out. Please try again."
         case .dnsFailure, .cannotConnect:
-            return "We can't reach the server right now, please try again later."
+            return "We can't reach the server right now."
         case .cancelled:
-            return "The request was cancelled"
+            return "Request was cancelled."
         case .tlsFailure:
-            return "A secure connection could not be established"
+            return "Secure connection failed."
         case .unknown:
             return "A network error occurred. Please try again later."
         }
     }
 }
+

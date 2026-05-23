@@ -10,38 +10,44 @@ import Combine
 import Networking
 import LocalStorage
 import CoreModels
-class MoviesRepository: MovieRepositoryProtocol{
-    let client: MoviesAPIClientProtocol
-    let cache: MoviesCacheManagerProtocol
+
+
+public final class MoviesRepository: MovieRepositoryProtocol{
+    private let client: MoviesAPIClientProtocol
+    private let cache: MoviesCacheProtocol
     
-    init(client: MoviesAPIClientProtocol, cache: MoviesCacheManagerProtocol) {
+    public init(client: MoviesAPIClientProtocol, cache: MoviesCacheProtocol){
         self.client = client
         self.cache = cache
     }
     
-    func getMovies(currentPage: Int) -> AnyPublisher<MoviesModel, NetworkError> {
-        client.getMovies(page: currentPage)
-            .map{ response in
-                let movies = response.movies?.map{$0.toDomain()} ?? []
-                if currentPage == 1 {
-                    self.cache.clear()
-                    }
-                self.cache.save(movies: movies)
-                return MoviesModel(page: response.page, movies: movies, totalPages: response.totalPages)
+    public func getMovies(currentPage: Int) -> AnyPublisher<MoviesModel, NetworkError> {
+        return client.getMovies(page: currentPage)
+            .map { response in
+                
+                let movies = response.movies?.map { $0.toDomain() } ?? []
+                self.cache.saveMovies(movies, page: currentPage)
+                return MoviesModel(
+                    page: response.page,
+                    movies: response.movies?.map{$0.toDomain()} ?? [],
+                    totalPages: response.totalPages)
             }
-            .catch{ _ in                
-                self.cache.fetchMovies()
-                    .map{
-                        MoviesModel(page: 1, movies: $0, totalPages: 1)
+            .catch { _ in
+                // fallback to cache
+                self.cache.getAllMovies()
+                    .map {
+                        MoviesModel(
+                            page: currentPage,
+                            movies: $0,
+                            totalPages: nil
+                        )
                     }
-                    .mapError({ _ in
-                        NetworkError.Transport(.unknown)
-                    })
+                    .setFailureType(to: NetworkError.self)
             }
             .eraseToAnyPublisher()
+        
     }
-    
-    func searchMovies(searchText: String, searchPage: Int) -> AnyPublisher<MoviesModel, NetworkError> {
+    public func searchMovies(searchText: String, searchPage: Int) -> AnyPublisher<MoviesModel, NetworkError> {
         client.searchMovie(searchText: searchText, searchPage: searchPage)
             .map{response in
                 MoviesModel(
@@ -60,8 +66,4 @@ class MoviesRepository: MovieRepositoryProtocol{
     }
 }
 
-//            .map{response in
-//                MoviesModel(
-//                    page: response.page,
-//                    movies: response.movies?.map{$0.toDomain()} ?? [],
-//                    totalPages: response.totalPages)
+

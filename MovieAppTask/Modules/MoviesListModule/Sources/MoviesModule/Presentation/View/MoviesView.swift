@@ -7,25 +7,22 @@
 
 import SwiftUI
 import DesignSystem
+
 public struct MoviesView: View {
     @StateObject private var viewModel: MoviesViewModel
-   
+    
     public init(viewModel: MoviesViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
+    
     public var body: some View {
-        NavigationStack{
-            mainContent
+        mainContent
             .task {
-                viewModel.getMovies()
-                viewModel.getGenres()
+                viewModel.onAppear()
             }
-            .toast(message: $viewModel.errorToast)
-            .scrollIndicators(.hidden)
             .safeAreaInset(edge: .top, spacing: 0) {
                 safeAreaInsetsView
             }
-        }
     }
 }
 
@@ -39,7 +36,7 @@ extension MoviesView{
         switch viewModel.loadingState{
         case .idle, .loadingMore:
             if viewModel.filteredMovies.isEmpty && !viewModel.searchText.isEmpty {
-                    EmptyContentView(type: .noResults(viewModel.searchText))
+                EmptyContentView(type: .noResults(viewModel.searchText))
             } else {
                 VStack{
                     GenresFilterView(

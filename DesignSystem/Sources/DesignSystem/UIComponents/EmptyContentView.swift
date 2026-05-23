@@ -27,13 +27,14 @@ public struct EmptyContentView: View {
             Spacer()
             Image(systemName: icon)
                 .font(.system(size: 100))
-                .foregroundStyle(Color.customYellow)
             
             Text(title)
                 .font(.headline)
             
             Text(subtitle)
                 .font(.subheadline)
+                .multilineTextAlignment(.center)
+                .padding()
             
             if let action {
                 Button("Retry", action: action)
@@ -49,9 +50,9 @@ public struct EmptyContentView: View {
     
     private var icon: String {
         switch type {
-        case .noMovies: return "film.slash"
+        case .noMovies: return "slash.circle"
         case .noResults: return "magnifyingglass"
-        case .error: return "wifi.slash"
+        case .error: return "slash.circle"
         }
     }
     

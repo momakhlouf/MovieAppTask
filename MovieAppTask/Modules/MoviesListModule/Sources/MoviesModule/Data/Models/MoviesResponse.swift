@@ -9,7 +9,7 @@ import Foundation
 import Commons
 import CoreModels
 //MARK: DTO
-struct MoviesResponse: Codable {
+public struct MoviesResponse: Codable {
     let page: Int?
     let movies: [MovieResponse]?
     let totalPages, totalResults: Int?

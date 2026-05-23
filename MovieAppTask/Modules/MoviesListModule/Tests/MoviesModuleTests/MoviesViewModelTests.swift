@@ -144,6 +144,83 @@ extension MoviesViewModelTests {
             
             wait(for: [exp], timeout: 1)
         }
+    
+    func test_getMovies_loadMore_appendsMoviesCorrectly() {
+
+        let moviePage1 = Movie(id: 1, posterPath: nil, title: "A", genreIDs: nil, releaseDate: nil)
+        let moviePage2 = Movie(id: 2, posterPath: nil, title: "B", genreIDs: nil, releaseDate: nil)
+
+        mockUseCase.moviesResult = .success(
+            MoviesModel(page: 1, movies: [moviePage1], totalPages: 2)
+        )
+
+        let exp1 = expectation(description: "first page")
+
+        var cancellables = Set<AnyCancellable>()
+
+        sut.$filteredMovies
+            .dropFirst()
+            .sink { movies in
+                if movies.count == 1 {
+                    exp1.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        sut.getMovies()
+
+        wait(for: [exp1], timeout: 1)
+
+        mockUseCase.moviesResult = .success(
+            MoviesModel(page: 2, movies: [moviePage2], totalPages: 2)
+        )
+
+        let exp2 = expectation(description: "second page")
+
+        sut.$movies
+            .dropFirst()
+            .sink { movies in
+                if movies.count == 2 {
+                    XCTAssertTrue(movies.contains(where: { $0.id == 1 }))
+                    XCTAssertTrue(movies.contains(where: { $0.id == 2 }))
+                    exp2.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        sut.handlePagination(movie: moviePage1)
+
+        wait(for: [exp2], timeout: 1)
+    }
+    
+    func test_pagination_stopsAtLastPage() {
+
+        let movie = Movie(id: 1, posterPath: nil, title: "A", genreIDs: nil, releaseDate: nil)
+
+        mockUseCase.moviesResult = .success(
+            MoviesModel(page: 1, movies: [movie], totalPages: 1)
+        )
+
+        let exp = expectation(description: "movies loaded")
+
+        var cancellables = Set<AnyCancellable>()
+
+        sut.$movies
+            .dropFirst()
+            .sink { movies in
+                if !movies.isEmpty {
+                    exp.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        sut.getMovies()
+
+        wait(for: [exp], timeout: 1)
+        sut.handlePagination(movie: movie)
+
+        XCTAssertEqual(sut.loadingState, .idle)
+    }
 }
  
 

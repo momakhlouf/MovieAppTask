@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import CoreModels
+
 struct MovieCardView: View {
     let movie: Movie
     var body: some View {
@@ -32,6 +33,7 @@ struct MovieCardView: View {
         }
     }
 }
+
 
 #Preview {
     MoviesView(viewModel: MoviesDIContainer.makeMoviesViewModel())

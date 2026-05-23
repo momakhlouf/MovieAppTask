@@ -14,48 +14,58 @@ public protocol BaseApIClientProtocol {
 public final class BaseAPIClient: BaseApIClientProtocol{
     let baseURL: URL
     private let apiKey: String
-
-   public init(baseURL: URL, apiKey: String) {
+    private let session: URLSession
+    public init(baseURL: URL, apiKey: String) {
         self.baseURL = baseURL
-       self.apiKey = apiKey
+        self.apiKey = apiKey
+        let config = URLSessionConfiguration.default
+        config.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        config.urlCache = nil
+        self.session = URLSession(configuration: config)
     }
     
-    public func execute<Response: Decodable>( _ request: APIRequest<Response>) -> AnyPublisher<Response, NetworkError> {
-        do{
-            let request = try request.makeURLRequest(baseURL: baseURL, apiKey: apiKey)
+    public func execute<Response: Decodable>(
+        _ request: APIRequest<Response>
+    ) -> AnyPublisher<Response, NetworkError> {
+        
+        do {
+            let urlRequest = try request.makeURLRequest(baseURL: baseURL, apiKey: apiKey)
             
-            return URLSession.shared.dataTaskPublisher(for: request)
-                .mapError{
-                    NetworkError.Transport(TransportError(urlError: $0))
-                }
-                .tryMap{ data, response in
-                    print("response: \(response)")
-
-                    guard let response = response as? HTTPURLResponse, response.statusCode >= 200 && response.statusCode < 300 else {
-                  
-
-                        print(NetworkError.httpResponse)
+            return session.dataTaskPublisher(for: urlRequest)
+                .tryMap { data, response in
+                    guard let http = response as? HTTPURLResponse else {
                         throw NetworkError.httpResponse
                     }
-                    print("data: \(data)")
+                    guard (200...299).contains(http.statusCode) else {
+                        throw NetworkError.httpStatusCode(http.statusCode)
+                    }
                     return data
                 }
                 .decode(type: Response.self, decoder: JSONDecoder())
                 .mapError { error in
-                    if let networkError = error as? NetworkError {
-                        print("errssr \(error.localizedDescription)")
-                        return networkError
-                    } else if error is DecodingError {
-                        print("errr \(error.localizedDescription)")
-                        return .decoding
-                    } else {
-                        return .Transport(.unknown)
-                    }
+                    Self.mapError(error)
                 }
                 .eraseToAnyPublisher()
-        }catch{
-            return Fail(error: NetworkError.badURL)
+            
+        } catch {
+            return Fail(error: .badURL)
                 .eraseToAnyPublisher()
         }
+    }
+    
+    private static func mapError(_ error: Error) -> NetworkError {
+        
+        if let networkError = error as? NetworkError {
+            return networkError
+        }
+        
+        if let urlError = error as? URLError {
+            return .Transport(TransportError(urlError: urlError))
+        }
+        
+        if error is DecodingError {
+            return .decoding
+        }
+        return .Transport(.unknown)
     }
 }

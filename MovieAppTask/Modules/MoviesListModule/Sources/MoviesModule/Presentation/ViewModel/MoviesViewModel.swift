@@ -10,14 +10,6 @@ import SwiftUI
 import CoreModels
 import Networking
 
-enum ContentLoadingState: Equatable {
-    case idle
-    case loading
-    case loadingMore
-    case empty
-    case error(_ errorMessage: String)
-}
-
 public final class MoviesViewModel: ObservableObject{
     @Published private(set) var movies: [Movie] = []
     @Published private(set) var genres: [Genre] = []
@@ -25,11 +17,11 @@ public final class MoviesViewModel: ObservableObject{
     @Published private(set) var filteredMovies: [Movie] = []
     @Published private(set) var selectedGenreID: Int? = nil
     @Published var searchText: String = ""
-    @Published var errorToast: String? = nil
     
     private var cancellables = Set<AnyCancellable>()
     private var currentPage = 1
     private var totalPages = 1
+    private var didLoadInitialData = false
     private let useCase: MoviesUseCaseProtocol
     let columns: [GridItem] = [
         GridItem(.flexible()),
@@ -79,22 +71,16 @@ extension MoviesViewModel{
     }
     
     private func handleError(_ error: NetworkError) {
-        if movies.isEmpty {
-            loadingState = .error(error.userMessage)
-        } else {
-            errorToast = error.userMessage
-            dismissToast()
+           if filteredMovies.isEmpty {
+               loadingState = .error(error.userMessage)
+           } else {
+               loadingState = .idle
         }
     }
     
-    private func dismissToast() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-           // self.errorToast = nil
-        }
-    }
     
     func handlePagination(movie: Movie){
-        guard movie.id == movies.last?.id else { return }
+        guard movie.id == filteredMovies.last?.id else { return }
         getMovies(loadMore: true)
     }
 }
@@ -172,6 +158,18 @@ extension MoviesViewModel{
     }
 }
 
+extension MoviesViewModel {
+    func onAppear() {
+        guard !didLoadInitialData else { return }
+        didLoadInitialData = true
+        loadInitialData()
+    }
+
+    private func loadInitialData() {
+        getMovies()
+        getGenres()
+    }
+}
 
 //MARK: API Search  - Not required but local.
 //    func searchMovies(loadMore: Bool = false){

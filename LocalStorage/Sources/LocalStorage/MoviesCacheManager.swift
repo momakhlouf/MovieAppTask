@@ -9,64 +9,68 @@ import Foundation
 import CoreModels
 import Combine
 import SwiftData
-import Networking
+import RealmSwift
 
-public protocol MoviesCacheManagerProtocol {
-    func save(movies: [Movie])
-    func fetchMovies() -> AnyPublisher<[Movie], NetworkError>
-    func clear()
+public protocol MoviesCacheProtocol {
+    func saveMovies(_ movies: [Movie], page: Int)
+    func getAllMovies() -> AnyPublisher<[Movie], Never> 
+
 }
-public class MoviesCacheManager: MoviesCacheManagerProtocol {
+
+public final class MoviesCacheManager: MoviesCacheProtocol {
     
-    private let context: ModelContext
-    private let maxCache = 50
+    private let queue = DispatchQueue(label: "realm.queue")
+    public init() {}
     
-    public init(context: ModelContext) {
-        self.context = context
-    }
-    
-    public func save(movies: [Movie]) {
-        do {
-            let existing = try context.fetch(FetchDescriptor<MovieEntity>())
-            let existingIDs = Set(existing.map { $0.id })
-            
-            for movie in movies {
-                if !existingIDs.contains(movie.id) {
-                    context.insert(movie.toEntity())
+    public func saveMovies(_ movies: [Movie], page: Int) {
+        
+        guard page <= 3 else { return }
+        
+        queue.async {
+            autoreleasepool {
+                do {
+                    let realm = try Realm()
+                    
+                    let objects = movies.map { $0.toRealm(page: page) }
+                    
+                    try realm.write {
+                        let old = realm.objects(MovieObject.self)
+                            .where { $0.page == page }
+                        
+                        realm.delete(old)
+                        realm.add(objects, update: .modified)
+                    }
+                    
+                } catch {
+                    // i will handle it later
+                    print("Realm save error: \(error)")
                 }
             }
-            
-            try context.save()
-        } catch {
-            print("Cache error:", error)
         }
-        //        movies.forEach {
-        //            context.insert($0.toEntity())
-        //        }
-        //        try? context.save()
     }
     
-    public func fetchMovies() -> AnyPublisher<[Movie], NetworkError> {
-        Future { promise in
-            do {
-                let result = try self.context.fetch(FetchDescriptor<MovieEntity>())
-                print(("result cache: \(result)"))
-                promise(.success(result.map { $0.toDomain() }))
-            } catch {
-                promise(.failure(.Transport(.offline)))
+    public func getAllMovies() -> AnyPublisher<[Movie], Never> {
+        Future<[Movie], Never> {promise in
+            self.queue.async {
+                autoreleasepool {
+                    do {
+                        let realm = try Realm()
+                        
+                        let results = realm.objects(MovieObject.self)
+                            .where { $0.page <= 3 }
+                            .sorted(byKeyPath: "page", ascending: true)
+                        
+                        let movies = results.map { $0.toDomain() }
+                        
+                        promise(.success(Array(movies)))
+                        
+                    } catch {
+                        print(" Realm fetch error: \(error)")
+                        promise(.success([]))
+                    }
+                }
             }
         }
         .eraseToAnyPublisher()
     }
-    
-    public func clear() {
-          do {
-              let items = try context.fetch(FetchDescriptor<MovieEntity>())
-              items.forEach { context.delete($0) }
-              try context.save()
-          } catch {
-              print("Cache clear error:", error)
-          }
-      }
-    
 }

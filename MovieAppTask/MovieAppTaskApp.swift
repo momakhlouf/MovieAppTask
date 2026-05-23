@@ -7,11 +7,14 @@
 
 import SwiftUI
 import MoviesListModule
+import MovieDetailsModule
+import Commons
+import Observation
 @main
 struct MovieAppTaskApp: App {
     var body: some Scene {
         WindowGroup {
-            MoviesView(viewModel: MoviesDIContainer.makeMoviesViewModel())
+            RootView()
         }
     }
 }

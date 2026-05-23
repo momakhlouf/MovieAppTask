@@ -18,8 +18,8 @@ public protocol MoviesUseCaseProtocol {
 }
 
 public class MoviesUseCase: MoviesUseCaseProtocol {
-    private let repository: MovieRepositoryProtocol
-    init(repository: MovieRepositoryProtocol) {
+    public let repository: MovieRepositoryProtocol
+    public init(repository: MovieRepositoryProtocol) {
         self.repository = repository
     }
     public func getMovies(page: Int) -> AnyPublisher<MoviesModel, NetworkError> {

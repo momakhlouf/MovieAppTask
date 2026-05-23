@@ -9,14 +9,18 @@ import SwiftUI
 
 struct SearchBarView: View {
     @Binding var searchText: String
+    @FocusState private var isKeyboardActive: Bool
+
     var body: some View {
         HStack{
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.gray)
-            TextField("Search movies..", text: $searchText)
+            TextField("Search movies...", text: $searchText)
+                .focused($isKeyboardActive)
             if !searchText.isEmpty {
                 Button {
                     searchText = ""
+                    isKeyboardActive = false
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .resizable()

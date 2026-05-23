@@ -8,7 +8,7 @@
 import Foundation
 import CoreModels
 
-struct GenresResponse: Codable {
+public struct GenresResponse: Codable {
     let genres: [GenreResponse]?
 }
 

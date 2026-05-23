@@ -19,7 +19,7 @@ public struct MoviesModel{
     }
 }
 
-public struct Movie{
+public struct Movie: Sendable, Equatable{
     public let id: Int
     public let posterPath: String?
     public let title: String?

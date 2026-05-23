@@ -8,7 +8,7 @@
 import Networking
 import Combine
 import CoreModels
-protocol MovieRepositoryProtocol {
+public protocol MovieRepositoryProtocol {
     func getMovies(currentPage: Int) -> AnyPublisher<MoviesModel, NetworkError>
     func searchMovies(searchText: String, searchPage: Int) -> AnyPublisher<MoviesModel, NetworkError>
     func getGenres() -> AnyPublisher<[Genre], NetworkError>

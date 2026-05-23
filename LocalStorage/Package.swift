@@ -16,9 +16,9 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(path: "CoreModels")
+        .package(path: "CoreModels"),
       //I GET UNKOWN ERRORS FROM XCODE, SO WILL USE SWIFT DATA
-      //  .package(url: "https://github.com/realm/realm-swift.git", from: "10.45.0")
+        .package(url: "https://github.com/realm/realm-swift.git", from: "14.14.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -26,8 +26,11 @@ let package = Package(
         .target(
             name: "LocalStorage",
             dependencies: [
-                "CoreModels"
-               // .product(name: "RealmSwift", package: "realm-swift")
+                "CoreModels",
+                
+                    .product(name: "RealmSwift", package: "realm-swift")
+
+
             ]
         ),
     ]

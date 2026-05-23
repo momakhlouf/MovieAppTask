@@ -9,24 +9,24 @@ import Foundation
 import Combine
 import Networking
 
-protocol MoviesAPIClientProtocol{
+public protocol MoviesAPIClientProtocol{
     func getMovies(page: Int) -> AnyPublisher<MoviesResponse, NetworkError>
     func searchMovie(searchText: String, searchPage: Int) -> AnyPublisher<MoviesResponse, NetworkError>
     func getGenres() -> AnyPublisher<GenresResponse, NetworkError>
     
 }
 
-class MoviesAPIClient: MoviesAPIClientProtocol{
+public class MoviesAPIClient: MoviesAPIClientProtocol{
     private let apiClient: BaseAPIClient
-    init(apiClient: BaseAPIClient) {
+  public init(apiClient: BaseAPIClient) {
         self.apiClient = apiClient
     }
     
-    func getMovies(page: Int) -> AnyPublisher<MoviesResponse, NetworkError> {
+    public func getMovies(page: Int) -> AnyPublisher<MoviesResponse, NetworkError> {
         let request = MoviesAPIRequest.getMovies(page: page)
         return apiClient.execute(request)
     }
-    func searchMovie(searchText: String, searchPage: Int) -> AnyPublisher<MoviesResponse, NetworkError> {
+    public func searchMovie(searchText: String, searchPage: Int) -> AnyPublisher<MoviesResponse, NetworkError> {
         let request = MoviesAPIRequest.searchMovies(searchText: searchText, searchPage: searchPage)
         return apiClient.execute(request)
     }
