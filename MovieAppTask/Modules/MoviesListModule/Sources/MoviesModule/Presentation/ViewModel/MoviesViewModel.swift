@@ -14,7 +14,7 @@ public final class MoviesViewModel: ObservableObject{
     @Published private(set) var movies: [Movie] = []
     @Published private(set) var genres: [Genre] = []
     @Published private(set) var loadingState: ContentLoadingState = .loading
-    @Published private(set) var filteredMovies: [Movie] = []
+   // @Published private(set) var filteredMovies: [Movie] = []
     @Published private(set) var selectedGenreID: Int? = nil
     @Published var searchText: String = ""
     
@@ -29,15 +29,17 @@ public final class MoviesViewModel: ObservableObject{
     ]
     init(useCase: MoviesUseCaseProtocol) {
         self.useCase = useCase
-        bindSearch()
-        bindFiltering()
+      //  bindSearch()
+     //   bindFiltering()
     }
 }
 
 //MARK: Get Movies
 extension MoviesViewModel{
     func getMovies(loadMore: Bool = false){
-        
+        if !loadMore {
+               resetPagination()
+           }
         if loadMore {
             guard currentPage < totalPages else { return }
             currentPage += 1
@@ -47,12 +49,10 @@ extension MoviesViewModel{
             .sink { [weak self] completion in
                 guard let self else { return }
                 if case .failure(let error) = completion {
-                    print("error")
                     self.loadingState = .error(NetworkError.map(error))
                 }
             } receiveValue: { [weak self] returnedData in
                 guard let self else { return }
-                print("success")
                 self.totalPages = returnedData.totalPages ?? 1
                 if loadMore {
                     let newMovies = returnedData.movies.filter { newMovie in
@@ -67,7 +67,10 @@ extension MoviesViewModel{
             .store(in: &cancellables)
     }
     
-    
+    private func resetPagination() {
+          currentPage = 1
+          totalPages = 1
+      }
     
     func handlePagination(movie: Movie){
         guard movie.id == filteredMovies.last?.id else { return }
@@ -75,28 +78,6 @@ extension MoviesViewModel{
     }
 }
 
-//MARK: Search
-extension MoviesViewModel{
-    private func bindSearch(){
-        $searchText
-            .debounce(for: .milliseconds(400), scheduler: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] text in
-                guard let self else { return }
-                self.currentPage = 1
-                self.totalPages = 1
-                if text.isEmpty {
-                    self.selectedGenreID = nil
-                    self.getMovies()
-                }
-                //if search api
-                //  else{
-                //    self.searchMovies()
-                //  }
-            }
-            .store(in: &cancellables)
-    }
-}
 
 //MARK: Genres
 extension MoviesViewModel{
@@ -124,28 +105,6 @@ extension MoviesViewModel{
             selectedGenreID = id
         }
     }
-    
-    //MARK: LOCAL search FILTER
-    private func bindFiltering() {
-        Publishers.CombineLatest3($movies, $selectedGenreID, $searchText)
-            .map { movies, selectedGenreID, searchText in
-                var result = movies
-                
-                if !searchText.isEmpty {
-                    result = result.filter {
-                        $0.title?.lowercased().contains(searchText.lowercased()) ?? false
-                    }
-                }
-                if let genreID = selectedGenreID {
-                    result = result.filter {
-                        $0.genreIDs?.contains(genreID) ?? false
-                    }
-                }
-                return result
-            }
-            .receive(on: DispatchQueue.main)
-            .assign(to: &$filteredMovies)
-    }
 }
 
 extension MoviesViewModel {
@@ -160,6 +119,75 @@ extension MoviesViewModel {
         getGenres()
     }
 }
+
+//MARK: Filter
+extension MoviesViewModel {
+    var filteredMovies: [Movie] {
+        movies.filter { movie in
+            
+            let moviesBySearch: Bool = {
+                let title = movie.title ?? ""
+                return searchText.isEmpty ||
+                title.localizedCaseInsensitiveContains(searchText)
+            }()
+            
+            let moviesByGenre: Bool = {
+                guard let genreID = selectedGenreID else { return true }
+                return movie.genreIDs?.contains(genreID) ?? false
+            }()
+            
+            return moviesBySearch && moviesByGenre
+        }
+    }
+    var isEmptyFilteredResults: Bool {
+        filteredMovies.isEmpty && !searchText.isEmpty
+    }
+}
+    
+    //MARK: local search filter with combineLatest
+    //    private func bindFiltering() {
+    //        Publishers.CombineLatest3($movies, $selectedGenreID, $searchText)
+    //            .map { movies, selectedGenreID, searchText in
+    //                var result = movies
+    //
+    //                if !searchText.isEmpty {
+    //                    result = result.filter {
+    //                        $0.title?.lowercased().contains(searchText.lowercased()) ?? false
+    //                    }
+    //                }
+    //                if let genreID = selectedGenreID {
+    //                    result = result.filter {
+    //                        $0.genreIDs?.contains(genreID) ?? false
+    //                    }
+    //                }
+    //                return result
+    //            }
+    //            .receive(on: DispatchQueue.main)
+    //            .assign(to: &$filteredMovies)
+    //    }
+    
+//MARK: for Search API
+//extension MoviesViewModel{
+//    private func bindSearch(){
+//        $searchText
+//            .debounce(for: .milliseconds(400), scheduler: DispatchQueue.main)
+//            .removeDuplicates()
+//            .sink { [weak self] text in
+//                guard let self else { return }
+//                self.currentPage = 1
+//                self.totalPages = 1
+//                if text.isEmpty {
+//                    self.selectedGenreID = nil
+//                    self.getMovies()
+//                }
+//                //if search api
+//                //  else{
+//                //    self.searchMovies()
+//                //  }
+//            }
+//            .store(in: &cancellables)
+//    }
+//}
 
 //MARK: API Search  - Not required but local.
 //    func searchMovies(loadMore: Bool = false){
@@ -208,3 +236,5 @@ extension MoviesViewModel {
 //            .receive(on: DispatchQueue.main)
 //            .assign(to: &$filteredMovies)
 //    }
+
+

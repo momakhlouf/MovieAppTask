@@ -34,7 +34,7 @@ extension MoviesView{
     var mainContent: some View {
         switch viewModel.loadingState{
         case .complete:
-            if viewModel.filteredMovies.isEmpty && !viewModel.searchText.isEmpty {
+            if viewModel.isEmptyFilteredResults {
                 EmptyContentView(type: .noResults(viewModel.searchText))
             } else {
                 VStack{
