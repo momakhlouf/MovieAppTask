@@ -24,7 +24,7 @@ struct SearchBarView: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .resizable()
-                        .foregroundStyle(Color.gray.opacity(0.3))
+                        .foregroundStyle(Color.gray.opacity(0.5))
                         .frame(width: 25, height: 25)
                 }
             }

@@ -13,7 +13,7 @@ import Networking
 public final class MoviesViewModel: ObservableObject{
     @Published private(set) var movies: [Movie] = []
     @Published private(set) var genres: [Genre] = []
-    @Published private(set) var loadingState: ContentLoadingState = .idle
+    @Published private(set) var loadingState: ContentLoadingState = .loading
     @Published private(set) var filteredMovies: [Movie] = []
     @Published private(set) var selectedGenreID: Int? = nil
     @Published var searchText: String = ""
@@ -37,25 +37,22 @@ public final class MoviesViewModel: ObservableObject{
 //MARK: Get Movies
 extension MoviesViewModel{
     func getMovies(loadMore: Bool = false){
-        guard loadingState != .loading && loadingState != .loadingMore else { return }
+        
         if loadMore {
             guard currentPage < totalPages else { return }
             currentPage += 1
-            loadingState = .loadingMore
-        } else {
-            currentPage = 1
-            loadingState = movies.isEmpty ? .loading : .idle
         }
         useCase.getMovies(page: currentPage)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 guard let self else { return }
-                //   self?.isLoading = false
                 if case .failure(let error) = completion {
-                    self.handleError(error)
+                    print("error")
+                    self.loadingState = .error(NetworkError.map(error))
                 }
             } receiveValue: { [weak self] returnedData in
                 guard let self else { return }
+                print("success")
                 self.totalPages = returnedData.totalPages ?? 1
                 if loadMore {
                     let newMovies = returnedData.movies.filter { newMovie in
@@ -65,18 +62,11 @@ extension MoviesViewModel{
                 } else {
                     self.movies = returnedData.movies
                 }
-                self.loadingState = self.movies.isEmpty ? .empty : .idle
+                self.loadingState = movies.isEmpty ? .empty: .complete
             }
             .store(in: &cancellables)
     }
     
-    private func handleError(_ error: NetworkError) {
-           if filteredMovies.isEmpty {
-               loadingState = .error(error.userMessage)
-           } else {
-               loadingState = .idle
-        }
-    }
     
     
     func handlePagination(movie: Movie){
@@ -118,7 +108,7 @@ extension MoviesViewModel{
                 switch completion{
                 case .finished: break
                 case .failure(let error):
-                    loadingState = .error(error.userMessage)
+                    loadingState = .error(NetworkError.map(error))
                 }
             } receiveValue: { [weak self] genres in
                 guard let self else { return }

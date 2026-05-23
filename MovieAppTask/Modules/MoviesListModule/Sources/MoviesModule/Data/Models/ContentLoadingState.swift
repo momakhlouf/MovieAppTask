@@ -6,11 +6,11 @@
 //
 
 import Foundation
-
+import CoreModels
+import Networking
 enum ContentLoadingState: Equatable {
-    case idle
     case loading
-    case loadingMore
+    case complete
     case empty
-    case error(_ errorMessage: String)
+    case error(NetworkError)
 }

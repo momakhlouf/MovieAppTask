@@ -7,14 +7,13 @@
 
 import SwiftUI
 import DesignSystem
-
+import CoreModels
 public struct MoviesView: View {
     @StateObject private var viewModel: MoviesViewModel
     
     public init(viewModel: MoviesViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
     public var body: some View {
         mainContent
             .task {
@@ -34,7 +33,7 @@ extension MoviesView{
     @ViewBuilder
     var mainContent: some View {
         switch viewModel.loadingState{
-        case .idle, .loadingMore:
+        case .complete:
             if viewModel.filteredMovies.isEmpty && !viewModel.searchText.isEmpty {
                 EmptyContentView(type: .noResults(viewModel.searchText))
             } else {
@@ -45,21 +44,32 @@ extension MoviesView{
                         onSelect: { viewModel.selectGenre($0) }
                     )
                     
-                    MoviesGridView(viewModel: viewModel)
+                    MoviesGridView(
+                        movies: viewModel.filteredMovies,
+                        columns: viewModel.columns,
+                        onMovieAppear: { viewModel.handlePagination(movie: $0) },
+                        onRefresh: { viewModel.getMovies() }
+                    )
                 }
             }
         case .empty:
             EmptyContentView(type: .noMovies) {
                 viewModel.getMovies()
             }
-        case .error(let errorMessage ):
-            EmptyContentView(type: .error(errorMessage)) {
+        case .error(let error):
+            EmptyContentView(type: .error(error.userMessage)) {
                 viewModel.getMovies()
             }
             
         case .loading:
-            ProgressView()
-                .frame(maxHeight: .infinity)
+            MoviesGridView(
+                movies: Movie.mockMovies,
+                columns: viewModel.columns,
+                onMovieAppear: { _ in },
+                onRefresh: { }
+            )
+            .shimmer(speed: 1.2, color: .black, angle: 20, animateOpacity: true, animateScale: true)
+            .redacted(reason: .placeholder)
         }
     }
     

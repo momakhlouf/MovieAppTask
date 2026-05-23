@@ -86,3 +86,17 @@ public enum TransportError: Error, Equatable {
     }
 }
 
+
+extension NetworkError {
+  public static func map(_ error: Error) -> NetworkError {
+        if let networkError = error as? NetworkError {
+            return networkError
+        }
+
+        if let urlError = error as? URLError {
+            return .Transport(TransportError(urlError: urlError))
+        }
+
+        return .httpResponse
+    }
+}

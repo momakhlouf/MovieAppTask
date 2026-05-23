@@ -59,20 +59,20 @@ public struct EmptyContentView: View {
     private var title: String {
         switch type {
         case .noMovies:
-            return "No Movies"
+            return "No Movies Yet"
         case .noResults:
-            return " Sorry"
+            return "No Results Found"
         case .error:
-            return "Error"
+            return "Something Went Wrong"
         }
     }
     
     private var subtitle: String {
         switch type {
         case .noMovies:
-            return "Check later"
+            return "There are no movies available right now. Please check back later."
         case .noResults(let text):
-            return "No results for '\(text)'"
+            return "No results for '\(text)' , Try a different search."
         case .error(let message):
             return message
         }

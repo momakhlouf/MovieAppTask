@@ -37,3 +37,15 @@ public struct Movie: Sendable, Equatable{
         self.releaseDate = releaseDate
     }
 }
+
+extension Movie {
+   public static let mockMovies: [Movie] = (1...6).map { index in
+        Movie(
+            id: index,
+            posterPath: nil,
+            title: "title title title title title",
+            genreIDs: nil,
+            releaseDate: nil
+        )
+    }
+}

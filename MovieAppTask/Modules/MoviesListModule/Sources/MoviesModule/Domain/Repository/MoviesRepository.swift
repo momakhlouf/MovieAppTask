@@ -32,17 +32,27 @@ public final class MoviesRepository: MovieRepositoryProtocol{
                     movies: response.movies?.map{$0.toDomain()} ?? [],
                     totalPages: response.totalPages)
             }
-            .catch { _ in
-                // fallback to cache
+            .catch { error in
                 self.cache.getAllMovies()
-                    .map {
-                        MoviesModel(
-                            page: currentPage,
-                            movies: $0,
-                            totalPages: nil
-                        )
+                    .flatMap { movies -> AnyPublisher<MoviesModel, NetworkError> in
+                        
+                        if !movies.isEmpty {
+                            return Just(
+                                MoviesModel(
+                                    page: currentPage,
+                                    movies: movies,
+                                    totalPages: nil,
+                                )
+                            )
+                            .setFailureType(to: NetworkError.self)
+                            .eraseToAnyPublisher()
+                        }
+                        
+                        let mappedError = NetworkError.map(error)
+                        return Fail(error: mappedError)
+                            .eraseToAnyPublisher()
                     }
-                    .setFailureType(to: NetworkError.self)
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         

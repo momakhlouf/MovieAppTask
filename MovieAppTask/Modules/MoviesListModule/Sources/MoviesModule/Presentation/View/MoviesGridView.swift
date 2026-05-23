@@ -10,24 +10,28 @@ import Commons
 import CoreModels
 
 struct MoviesGridView: View {
-    @ObservedObject var viewModel: MoviesViewModel
+    let movies: [Movie]
+       let columns: [GridItem]
+       let onMovieAppear: (Movie) -> Void
+       let onRefresh: () -> Void
     @Environment(MovieCoordinator.self) var coordinator
     var body: some View {
         ScrollView(showsIndicators: false){
-            LazyVGrid(columns: viewModel.columns) {
-                ForEach(viewModel.filteredMovies, id: \.id){ movie in
+            LazyVGrid(columns: columns) {
+                ForEach(movies, id: \.id){ movie in
                     MovieCardView(movie: movie)
                         .onTapGesture {
                             coordinator.navigate(to: .movieDetails(id: movie.id))
                         }
                         .onAppear{
-                            viewModel.handlePagination(movie: movie)
+                            onMovieAppear(movie)
+                           // viewModel.handlePagination(movie: movie)
                         }
                 }
             }
         }
         .refreshable {
-            viewModel.getMovies()
+            onRefresh()
         }
     }
 }
