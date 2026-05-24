@@ -11,11 +11,13 @@ public struct MoviesModel{
     public let page: Int?
     public let movies: [Movie]
     public let totalPages: Int?
+    public let isFromCache: Bool
     
-   public init(page: Int?, movies: [Movie], totalPages: Int?) {
+   public init(page: Int?, movies: [Movie], totalPages: Int?, isFromCache: Bool = false) {
         self.page = page
         self.movies = movies
         self.totalPages = totalPages
+       self.isFromCache = isFromCache       
     }
 }
 
@@ -29,7 +31,7 @@ public struct Movie: Sendable, Equatable{
        guard let posterPath else { return nil }
        return URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)")
     }
-  public init(id: Int, posterPath: String?, title: String?, genreIDs: [Int]?, releaseDate: Date?) {
+    public init(id: Int, posterPath: String?, title: String?, genreIDs: [Int]?, releaseDate: Date?) {
         self.id = id
         self.posterPath = posterPath
         self.title = title

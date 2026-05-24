@@ -42,6 +42,7 @@ public final class MoviesRepository: MovieRepositoryProtocol{
                                     page: currentPage,
                                     movies: movies,
                                     totalPages: nil,
+                                    isFromCache: true
                                 )
                             )
                             .setFailureType(to: NetworkError.self)

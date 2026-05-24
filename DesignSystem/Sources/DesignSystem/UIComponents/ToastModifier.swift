@@ -18,18 +18,24 @@ public struct ToastModifier: ViewModifier {
             content
             if let message {
                 VStack {
-                    Spacer()
                     Text(message)
                         .padding()
                         .background(.yellow.opacity(0.7))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .padding()
+                    Spacer()
                 }
                 .transition(.move(edge: .top))
             }
         }
-        .animation(.easeInOut, value: message)
+        .animation(.bouncy, value: message)
+        .onChange(of: message) { _, newMessage in
+            guard newMessage != nil else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.message = nil
+            }
+        }
     }
 }
 

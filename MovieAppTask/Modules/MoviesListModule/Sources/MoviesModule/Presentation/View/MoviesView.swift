@@ -22,6 +22,7 @@ public struct MoviesView: View {
             .safeAreaInset(edge: .top, spacing: 0) {
                 safeAreaInsetsView
             }
+            .toast(message: $viewModel.toastMessage)
     }
 }
 

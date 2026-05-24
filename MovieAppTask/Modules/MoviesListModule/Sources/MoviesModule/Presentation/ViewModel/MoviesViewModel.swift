@@ -17,7 +17,7 @@ public final class MoviesViewModel: ObservableObject{
    // @Published private(set) var filteredMovies: [Movie] = []
     @Published private(set) var selectedGenreID: Int? = nil
     @Published var searchText: String = ""
-    
+    @Published var toastMessage: String?
     private var cancellables = Set<AnyCancellable>()
     private var currentPage = 1
     private var totalPages = 1
@@ -50,6 +50,7 @@ extension MoviesViewModel{
                 guard let self else { return }
                 if case .failure(let error) = completion {
                     self.loadingState = .error(NetworkError.map(error))
+                    self.toastMessage = error.userMessage
                 }
             } receiveValue: { [weak self] returnedData in
                 guard let self else { return }
@@ -63,6 +64,9 @@ extension MoviesViewModel{
                     self.movies = returnedData.movies
                 }
                 self.loadingState = movies.isEmpty ? .empty: .complete
+                if returnedData.isFromCache{
+                    self.toastMessage = NetworkError.Transport(.offline).userMessage
+                }
             }
             .store(in: &cancellables)
     }
