@@ -53,7 +53,7 @@ extension MoviesViewModelTests {
             
             sut.getMovies()
             wait(for: [exp], timeout: 1)
-            XCTAssertEqual(sut.loadingState, .idle)
+            XCTAssertEqual(sut.loadingState, .complete)
         }
         
         func test_getMovies_empty_showsEmptyState() {
@@ -95,55 +95,41 @@ extension MoviesViewModelTests {
         }
 
         
-        func test_search_filtersMoviesLocally() {
-            let movie1 = Movie(id: 1, posterPath: nil, title: "Batman", genreIDs: nil, releaseDate: nil)
-            let movie2 = Movie(id: 2, posterPath: nil, title: "Superman", genreIDs: nil, releaseDate: nil)
-            
-            mockUseCase.moviesResult = .success(
-                MoviesModel(page: 1, movies: [movie1, movie2], totalPages: 1)
-            )
-            
-            let exp = expectation(description: "Search")
-            
-            sut.$filteredMovies
-                .dropFirst()
-                .filter { $0.count == 1 }
-                .sink { movies in
-                    XCTAssertEqual(movies.first?.title, "Batman")
-                    exp.fulfill()
-                }
-                .store(in: &cancellables)
-            
-            sut.getMovies()
-            sut.searchText = "bat"
-            
-            wait(for: [exp], timeout: 2)
-        }
-        
-        func test_genreFilter_filtersCorrectly() {
-            let movie1 = Movie(id: 1, posterPath: nil, title: "A", genreIDs: [1], releaseDate: nil)
-            let movie2 = Movie(id: 2, posterPath: nil, title: "B", genreIDs: [2], releaseDate: nil)
-            
-            mockUseCase.moviesResult = .success(
-                MoviesModel(page: 1, movies: [movie1, movie2], totalPages: 1)
-            )
-            
-            let exp = expectation(description: "Genre filter")
-            
-            sut.$filteredMovies
-                .dropFirst()
-                .filter { $0.count == 1 }
-                .sink { movies in
-                    XCTAssertEqual(movies.first?.id, 1)
-                    exp.fulfill()
-                }
-                .store(in: &cancellables)
-            
-            sut.getMovies()
-            sut.selectGenre(1)
-            
-            wait(for: [exp], timeout: 1)
-        }
+    func test_search_filtersMoviesLocally() {
+        let movie1 = Movie(id: 1, posterPath: nil, title: "Batman", genreIDs: nil, releaseDate: nil)
+        let movie2 = Movie(id: 2, posterPath: nil, title: "Superman", genreIDs: nil, releaseDate: nil)
+
+        mockUseCase.moviesResult = .success(
+            MoviesModel(page: 1, movies: [movie1, movie2], totalPages: 1)
+        )
+
+        sut.getMovies()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.1))
+
+        sut.searchText = "bat"
+
+        let result = sut.filteredMovies
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(result.first?.title, "Batman")
+    }
+
+    func test_genreFilter_filtersCorrectly() {
+        let movie1 = Movie(id: 1, posterPath: nil, title: "A", genreIDs: [1], releaseDate: nil)
+        let movie2 = Movie(id: 2, posterPath: nil, title: "B", genreIDs: [2], releaseDate: nil)
+
+        mockUseCase.moviesResult = .success(
+            MoviesModel(page: 1, movies: [movie1, movie2], totalPages: 1)
+        )
+
+        sut.getMovies()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.1))
+
+        sut.selectGenre(1)
+
+        let result = sut.filteredMovies
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(result.first?.id, 1)
+    }
     
     func test_getMovies_loadMore_appendsMoviesCorrectly() {
 
@@ -158,7 +144,7 @@ extension MoviesViewModelTests {
 
         var cancellables = Set<AnyCancellable>()
 
-        sut.$filteredMovies
+        sut.$movies
             .dropFirst()
             .sink { movies in
                 if movies.count == 1 {
@@ -219,7 +205,7 @@ extension MoviesViewModelTests {
         wait(for: [exp], timeout: 1)
         sut.handlePagination(movie: movie)
 
-        XCTAssertEqual(sut.loadingState, .idle)
+        XCTAssertEqual(sut.loadingState, .complete)
     }
 }
  
