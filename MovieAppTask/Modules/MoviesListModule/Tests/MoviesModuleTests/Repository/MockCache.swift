@@ -19,7 +19,7 @@ class MockCache: MoviesCacheProtocol {
         savedMovies.append(contentsOf: movies)
       }
     
-    func getAllMovies() -> AnyPublisher<[CoreModels.Movie], Never> {
+    func getMovies(page: Int) -> AnyPublisher<[Movie], Never> {
         Just(savedMovies)
             .eraseToAnyPublisher()
     }

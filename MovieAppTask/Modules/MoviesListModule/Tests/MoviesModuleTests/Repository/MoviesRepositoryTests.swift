@@ -38,6 +38,7 @@ final class MoviesRepositoryTests: XCTestCase {
                     receiveValue: { result in
                         XCTAssertEqual(result.movies.count, 1)
                         XCTAssertEqual(result.movies.first?.id, 1)
+                        XCTAssertTrue(result.isFromCache)
                         exp.fulfill()
                     }
                 )
