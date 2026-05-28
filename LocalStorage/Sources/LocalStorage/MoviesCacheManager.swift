@@ -13,7 +13,7 @@ import RealmSwift
 
 public protocol MoviesCacheProtocol {
     func saveMovies(_ movies: [Movie], page: Int)
-    func getAllMovies() -> AnyPublisher<[Movie], Never> 
+    func getMovies(page: Int) -> AnyPublisher<[Movie], Never>
 
 }
 
@@ -24,7 +24,7 @@ public final class MoviesCacheManager: MoviesCacheProtocol {
     
     public func saveMovies(_ movies: [Movie], page: Int) {
         
-        guard page <= 3 else { return }
+      //  guard page <= 3 else { return }
         
         queue.async {
             autoreleasepool {
@@ -49,15 +49,15 @@ public final class MoviesCacheManager: MoviesCacheProtocol {
         }
     }
     
-    public func getAllMovies() -> AnyPublisher<[Movie], Never> {
-        Future<[Movie], Never> {promise in
-            self.queue.async {
+    public func getMovies(page: Int) -> AnyPublisher<[Movie], Never> {
+        Deferred {
+            Future<[Movie], Never> { promise in
                 autoreleasepool {
                     do {
                         let realm = try Realm()
                         
                         let results = realm.objects(MovieObject.self)
-                            .where { $0.page <= 3 }
+                          //  .where { $0.page == page }
                             .sorted(byKeyPath: "page", ascending: true)
                         
                         let movies = results.map { $0.toDomain() }
@@ -71,6 +71,7 @@ public final class MoviesCacheManager: MoviesCacheProtocol {
                 }
             }
         }
+        .subscribe(on: queue)
         .eraseToAnyPublisher()
     }
 }

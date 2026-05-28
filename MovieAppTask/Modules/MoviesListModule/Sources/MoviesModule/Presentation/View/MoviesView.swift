@@ -69,6 +69,7 @@ extension MoviesView{
                 onMovieAppear: { _ in },
                 onRefresh: { }
             )
+            .disabled(true)
             .shimmer(speed: 1.2, color: .black, angle: 20, animateOpacity: true, animateScale: true)
             .redacted(reason: .placeholder)
         }
