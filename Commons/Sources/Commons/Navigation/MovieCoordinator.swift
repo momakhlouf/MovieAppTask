@@ -12,19 +12,27 @@ import Observation
 public final class MovieCoordinator {
     public var path = NavigationPath()
     
-  public init(path: NavigationPath = NavigationPath()) {
+    public init(path: NavigationPath = NavigationPath()) {
         self.path = path
     }
-
-   public func navigate(to destination: MovieDestination ) {
+    
+    public func navigate(to destination: MovieDestination ) {
         path.append(destination)
     }
-
+    
+    func goBack() {
+        if !path.isEmpty{
+            path.removeLast()
+        }
+    }
+    
     func popToRoot() {
-        path.removeLast(path.count)
+        if !path.isEmpty{
+            path.removeLast(path.count)
+        }
     }
 }
 
 public enum MovieDestination: Hashable{
- case movieDetails(id: Int)
+    case movieDetails(id: Int)
 }

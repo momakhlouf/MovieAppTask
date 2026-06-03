@@ -7,7 +7,7 @@
 
 import Foundation
 import Combine
-import Networking
+import CoreModels
 
  class MovieDetailsRepository: MovieDetailsRepositoryProtocol{
     
@@ -17,11 +17,12 @@ import Networking
         self.client = client
     }
     
-    func getMovieDetails(id: Int) -> AnyPublisher<MovieDetailsModel, NetworkError> {
+    func getMovieDetails(id: Int) -> AnyPublisher<MovieDetailsModel, AppError> {
         return client.getMovieDetails(id)
             .map { response in
                 response.toDomain()
             }
+            .mapError{$0.toAppError()}
             .eraseToAnyPublisher()
     }
 }

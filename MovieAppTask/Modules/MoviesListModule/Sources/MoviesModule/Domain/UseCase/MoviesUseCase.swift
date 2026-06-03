@@ -6,29 +6,28 @@
 //
 
 import Foundation
-import Networking
 import Combine
 import CoreModels
 
 public protocol MoviesUseCaseProtocol {
-    func getMovies(page: Int) -> AnyPublisher<MoviesModel, NetworkError>
-    func searchMovies(searchText: String, page: Int) -> AnyPublisher<MoviesModel, NetworkError>
-    func getGenres() -> AnyPublisher<[Genre], NetworkError>
+    func getMovies(page: Int) -> AnyPublisher<MoviesModel, AppError>
+    func searchMovies(searchText: String, page: Int) -> AnyPublisher<MoviesModel, AppError>
+    func getGenres() -> AnyPublisher<[Genre], AppError>
 
 }
-
-public class MoviesUseCase: MoviesUseCaseProtocol {
+// in prod will separate use case , one struct for each use case
+public struct MoviesUseCase: MoviesUseCaseProtocol {
     public let repository: MovieRepositoryProtocol
     public init(repository: MovieRepositoryProtocol) {
         self.repository = repository
     }
-    public func getMovies(page: Int) -> AnyPublisher<MoviesModel, NetworkError> {
+    public func getMovies(page: Int) -> AnyPublisher<MoviesModel, AppError> {
         repository.getMovies(currentPage: page)
     }
-    public func searchMovies(searchText: String, page: Int) -> AnyPublisher<MoviesModel, NetworkError> {
+    public func searchMovies(searchText: String, page: Int) -> AnyPublisher<MoviesModel, AppError> {
         repository.searchMovies(searchText: searchText, searchPage: page)
     }
-    public func getGenres() -> AnyPublisher<[Genre], NetworkError> {
+    public func getGenres() -> AnyPublisher<[Genre], AppError> {
         repository.getGenres()
     }
 }

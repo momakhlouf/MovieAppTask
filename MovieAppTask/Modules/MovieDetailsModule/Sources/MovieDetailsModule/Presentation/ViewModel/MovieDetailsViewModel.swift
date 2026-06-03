@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+
 public final class MovieDetailsViewModel: ObservableObject {
     @Published var state: MovieDetailsContentState = .loading
     
@@ -28,7 +29,7 @@ public final class MovieDetailsViewModel: ObservableObject {
                 guard let self else { return }
                 switch completion {
                 case .failure(let error):
-                    self.state = .error(error.userMessage)
+                    self.state = .error(error)
                 case .finished: break
                 }
             } receiveValue: { [weak self] returnedData in

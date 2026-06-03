@@ -7,13 +7,13 @@
 
 import Foundation
 import Combine
-import Networking
+import CoreModels
 @testable import MovieDetailsModule
 
 class MockMovieDetailsUseCase: MovieDetailsUseCaseProtocol {
-    var result: Result<MovieDetailsModel, NetworkError>?
+    var result: Result<MovieDetailsModel, AppError>?
           
-      func getMovieDetails(id: Int) -> AnyPublisher<MovieDetailsModel, NetworkError> {
+      func getMovieDetails(id: Int) -> AnyPublisher<MovieDetailsModel, AppError> {
           guard let result else {
               fatalError("Result not set ")
           }

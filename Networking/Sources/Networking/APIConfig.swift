@@ -11,6 +11,6 @@ public enum APIConfig{
     public static let baseURL = URL(string: "https://api.themoviedb.org/3/")!
     public static let apiKey = "15fe946886608e9b2315244355fb5b94"
   //  API_KEY = YOUR_API_KEY_HERE
-   // will be to be in Secrets.xcconfig
+   // to be in Secrets.xcconfig
 
 }

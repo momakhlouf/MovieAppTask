@@ -77,7 +77,7 @@ extension MoviesViewModelTests {
         }
         
         func test_getMovies_failure_setsErrorState_whenNoData() {
-            mockUseCase.moviesResult = .failure(.Transport(.unknown))
+            mockUseCase.moviesResult = .failure(.unknown)
             
             let exp = expectation(description: "Error state")
             

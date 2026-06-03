@@ -12,14 +12,14 @@ import CoreModels
 
 final class MockMoviesUseCase: MoviesUseCaseProtocol {
     
-    var moviesResult: Result<MoviesModel, NetworkError>?
-    var genresResult: Result<[Genre], NetworkError>?
+    var moviesResult: Result<MoviesModel, AppError>?
+    var genresResult: Result<[Genre], AppError>?
     
-    func getMovies(page: Int) -> AnyPublisher<MoviesModel, NetworkError> {
+    func getMovies(page: Int) -> AnyPublisher<MoviesModel, AppError> {
         switch moviesResult {
         case .success(let data):
             return Just(data)
-                .setFailureType(to: NetworkError.self)
+                .setFailureType(to: AppError.self)
                 .eraseToAnyPublisher()
         case .failure(let error):
             return Fail(error: error)
@@ -29,15 +29,15 @@ final class MockMoviesUseCase: MoviesUseCaseProtocol {
         }
     }
     
-    func searchMovies(searchText: String, page: Int) -> AnyPublisher<MoviesModel, NetworkError> {
+    func searchMovies(searchText: String, page: Int) -> AnyPublisher<MoviesModel, AppError> {
         fatalError("Not used")
     }
     
-    func getGenres() -> AnyPublisher<[Genre], NetworkError> {
+    func getGenres() -> AnyPublisher<[Genre], AppError> {
         switch genresResult {
         case .success(let data):
             return Just(data)
-                .setFailureType(to: NetworkError.self)
+                .setFailureType(to: AppError.self)
                 .eraseToAnyPublisher()
         case .failure(let error):
             return Fail(error: error)

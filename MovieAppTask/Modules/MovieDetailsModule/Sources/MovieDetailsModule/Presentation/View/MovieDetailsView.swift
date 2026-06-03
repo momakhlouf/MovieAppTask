@@ -26,8 +26,8 @@ public struct MovieDetailsView: View {
             case .success(let movie):
                movieDetailContent(movie: movie)
                 //.ignoresSafeArea(edges: .top)
-            case .error(let message):
-                EmptyContentView(type: .error(message))
+            case .error(let error):
+                EmptyContentView(type: .error(error.userMessage))
             }
         }
         .task {

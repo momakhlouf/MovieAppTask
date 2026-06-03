@@ -6,9 +6,9 @@
 //
 
 import Foundation
-
+import CoreModels
 enum MovieDetailsContentState {
     case loading
     case success(MovieDetailsModel)
-    case error(String)
+    case error(AppError)
 }

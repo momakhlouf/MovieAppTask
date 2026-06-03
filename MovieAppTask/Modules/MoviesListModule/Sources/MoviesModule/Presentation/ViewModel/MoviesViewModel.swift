@@ -8,13 +8,11 @@
 import Combine
 import SwiftUI
 import CoreModels
-import Networking
 
 public final class MoviesViewModel: ObservableObject{
     @Published private(set) var movies: [Movie] = []
     @Published private(set) var genres: [Genre] = []
     @Published private(set) var loadingState: ContentLoadingState = .loading
-   // @Published private(set) var filteredMovies: [Movie] = []
     @Published private(set) var selectedGenreID: Int? = nil
     @Published var searchText: String = ""
     @Published var toastMessage: String?
@@ -29,52 +27,60 @@ public final class MoviesViewModel: ObservableObject{
     ]
     init(useCase: MoviesUseCaseProtocol) {
         self.useCase = useCase
-      //  bindSearch()
-     //   bindFiltering()
+        //  bindSearch()
+        //   bindFiltering()
     }
 }
 
 //MARK: Get Movies
 extension MoviesViewModel{
     func getMovies(loadMore: Bool = false){
-        if !loadMore {
-               resetPagination()
-           }
-        if loadMore {
-            guard currentPage < totalPages else { return }
-            currentPage += 1
-        }
+        preparePagination(loadMore: loadMore)
         useCase.getMovies(page: currentPage)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
+            .sink (receiveCompletion: handleCompletion,
+                   receiveValue: { [weak self] returnedData in
                 guard let self else { return }
-                if case .failure(let error) = completion {
-                    self.loadingState = .error(NetworkError.map(error))
-                    self.toastMessage = error.userMessage
-                }
-            } receiveValue: { [weak self] returnedData in
-                guard let self else { return }
-                self.totalPages = returnedData.totalPages ?? 1
-                if loadMore {
-                    let newMovies = returnedData.movies.filter { newMovie in
-                        !self.movies.contains(where: { $0.id == newMovie.id })
-                    }
-                    self.movies.append(contentsOf: newMovies)
-                } else {
-                    self.movies = returnedData.movies
-                }
+                handleMoviesResponse(returnedData, loadMore: loadMore)
                 self.loadingState = movies.isEmpty ? .empty: .complete
                 if returnedData.isFromCache{
-                    self.toastMessage = NetworkError.Transport(.offline).userMessage
+                    self.toastMessage = AppError.offline.userMessage
                 }
-            }
+            })
             .store(in: &cancellables)
     }
     
+    private func handleMoviesResponse(_ returnedData: MoviesModel, loadMore: Bool){
+        self.totalPages = returnedData.totalPages ?? 1
+        if loadMore {
+            let newMovies = returnedData.movies.filter { newMovie in
+                !self.movies.contains(where: { $0.id == newMovie.id })
+            }
+            self.movies.append(contentsOf: newMovies)
+        } else {
+            self.movies = returnedData.movies
+        }
+    }
+    
+    private func preparePagination(loadMore: Bool) {
+        if !loadMore {
+            resetPagination()
+        } else {
+            guard currentPage < totalPages else { return }
+            currentPage += 1
+        }
+    }
+    private func handleCompletion(_ completion: Subscribers.Completion<AppError>) {
+        if case .failure(let error) = completion {
+            guard movies.isEmpty else { return } 
+            loadingState = .error(error)
+        }
+    }
+    
     private func resetPagination() {
-          currentPage = 1
-          totalPages = 1
-      }
+        currentPage = 1
+        totalPages = 1
+    }
     
     func handlePagination(movie: Movie){
         guard movie.id == filteredMovies.last?.id else { return }
@@ -88,17 +94,12 @@ extension MoviesViewModel{
     func getGenres(){
         useCase.getGenres()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self else { return }
-                switch completion{
-                case .finished: break
-                case .failure(let error):
-                    loadingState = .error(NetworkError.map(error))
-                }
-            } receiveValue: { [weak self] genres in
-                guard let self else { return }
-                self.genres = genres
-            }
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { [weak self] genres in
+                    guard let self else { return }
+                    self.genres = genres
+                })
             .store(in: &cancellables)
     }
     
@@ -117,7 +118,7 @@ extension MoviesViewModel {
         didLoadInitialData = true
         loadInitialData()
     }
-
+    
     private func loadInitialData() {
         getMovies()
         getGenres()
@@ -147,29 +148,29 @@ extension MoviesViewModel {
         filteredMovies.isEmpty && !searchText.isEmpty
     }
 }
-    
-    //MARK: local search filter with combineLatest
-    //    private func bindFiltering() {
-    //        Publishers.CombineLatest3($movies, $selectedGenreID, $searchText)
-    //            .map { movies, selectedGenreID, searchText in
-    //                var result = movies
-    //
-    //                if !searchText.isEmpty {
-    //                    result = result.filter {
-    //                        $0.title?.lowercased().contains(searchText.lowercased()) ?? false
-    //                    }
-    //                }
-    //                if let genreID = selectedGenreID {
-    //                    result = result.filter {
-    //                        $0.genreIDs?.contains(genreID) ?? false
-    //                    }
-    //                }
-    //                return result
-    //            }
-    //            .receive(on: DispatchQueue.main)
-    //            .assign(to: &$filteredMovies)
-    //    }
-    
+
+//MARK: local search filter with combineLatest
+//    private func bindFiltering() {
+//        Publishers.CombineLatest3($movies, $selectedGenreID, $searchText)
+//            .map { movies, selectedGenreID, searchText in
+//                var result = movies
+//
+//                if !searchText.isEmpty {
+//                    result = result.filter {
+//                        $0.title?.lowercased().contains(searchText.lowercased()) ?? false
+//                    }
+//                }
+//                if let genreID = selectedGenreID {
+//                    result = result.filter {
+//                        $0.genreIDs?.contains(genreID) ?? false
+//                    }
+//                }
+//                return result
+//            }
+//            .receive(on: DispatchQueue.main)
+//            .assign(to: &$filteredMovies)
+//    }
+
 //MARK: for Search API
 //extension MoviesViewModel{
 //    private func bindSearch(){

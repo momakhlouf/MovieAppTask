@@ -11,9 +11,9 @@ import CoreModels
 
 struct MoviesGridView: View {
     let movies: [Movie]
-       let columns: [GridItem]
-       let onMovieAppear: (Movie) -> Void
-       let onRefresh: () -> Void
+    let columns: [GridItem]
+    let onMovieAppear: (Movie) -> Void
+    let onRefresh: () -> Void
     @Environment(MovieCoordinator.self) var coordinator
     var body: some View {
         ScrollView(showsIndicators: false){
@@ -25,7 +25,6 @@ struct MoviesGridView: View {
                         }
                         .onAppear{
                             onMovieAppear(movie)
-                           // viewModel.handlePagination(movie: movie)
                         }
                 }
             }

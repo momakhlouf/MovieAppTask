@@ -7,10 +7,9 @@
 
 import Foundation
 import CoreModels
-import Networking
 enum ContentLoadingState: Equatable {
     case loading
     case complete
     case empty
-    case error(NetworkError)
+    case error(AppError)
 }

@@ -1,8 +1,8 @@
 import XCTest
 @testable import MovieDetailsModule
 import Combine
-import Networking
-
+import CoreModels
+import Commons
 final class MovieDetailsModuleTests: XCTestCase {
     
     private var mockUseCase: MockMovieDetailsUseCase!
@@ -44,7 +44,7 @@ final class MovieDetailsModuleTests: XCTestCase {
     }
     
     func test_getMovieDetails_failure() {
-        let error = NetworkError.httpResponse
+        let error = AppError.serverError
         mockUseCase.result = .failure(error)
         
         let expectation = XCTestExpectation(description: "State should be error")
@@ -52,8 +52,8 @@ final class MovieDetailsModuleTests: XCTestCase {
         viewModel.$state
             .dropFirst()
             .sink { state in
-                if case .error(let message) = state {
-                    XCTAssertEqual(message, error.userMessage)
+                if case .error(let error) = state {
+                    XCTAssertEqual(error, error)
                     expectation.fulfill()
                 }
             }
@@ -62,6 +62,14 @@ final class MovieDetailsModuleTests: XCTestCase {
         viewModel.getMovieDetails()
         
         wait(for: [expectation], timeout: 1)
+    }
+ 
+    func test_navigate_appendsDestinationToPath() {
+        let coordinator = MovieCoordinator()
+        
+        coordinator.navigate(to: .movieDetails(id: 10))
+        
+        XCTAssertEqual(coordinator.path.count, 1)
     }
     
 }

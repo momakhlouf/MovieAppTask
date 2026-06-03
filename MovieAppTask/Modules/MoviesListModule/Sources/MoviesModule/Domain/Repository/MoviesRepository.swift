@@ -21,21 +21,19 @@ public final class MoviesRepository: MovieRepositoryProtocol{
         self.cache = cache
     }
     
-    public func getMovies(currentPage: Int) -> AnyPublisher<MoviesModel, NetworkError> {
+    public func getMovies(currentPage: Int) -> AnyPublisher<MoviesModel, AppError> {
         return client.getMovies(page: currentPage)
             .map { response in
-                
                 let movies = response.movies?.map { $0.toDomain() } ?? []
                 self.cache.saveMovies(movies, page: currentPage)
                 return MoviesModel(
                     page: response.page,
-                    movies: response.movies?.map{$0.toDomain()} ?? [],
+                    movies: movies,
                     totalPages: response.totalPages)
             }
-            .catch { error in
-                self.cache.getMovies(page: currentPage)
-                    .flatMap { movies -> AnyPublisher<MoviesModel, NetworkError> in
-                        
+            .catch { (error: NetworkError)  in
+                 self.cache.getMovies(page: currentPage)
+                    .flatMap { movies -> AnyPublisher<MoviesModel, AppError> in
                         if !movies.isEmpty {
                             return Just(
                                 MoviesModel(
@@ -45,12 +43,10 @@ public final class MoviesRepository: MovieRepositoryProtocol{
                                     isFromCache: true
                                 )
                             )
-                            .setFailureType(to: NetworkError.self)
+                            .setFailureType(to: AppError.self)
                             .eraseToAnyPublisher()
                         }
-                        
-                        let mappedError = NetworkError.map(error)
-                        return Fail(error: mappedError)
+                        return Fail(error: error.toAppError())
                             .eraseToAnyPublisher()
                     }
                     .eraseToAnyPublisher()
@@ -58,7 +54,8 @@ public final class MoviesRepository: MovieRepositoryProtocol{
             .eraseToAnyPublisher()
         
     }
-    public func searchMovies(searchText: String, searchPage: Int) -> AnyPublisher<MoviesModel, NetworkError> {
+    
+    public func searchMovies(searchText: String, searchPage: Int) -> AnyPublisher<MoviesModel, AppError> {
         client.searchMovie(searchText: searchText, searchPage: searchPage)
             .map{response in
                 MoviesModel(
@@ -66,13 +63,16 @@ public final class MoviesRepository: MovieRepositoryProtocol{
                     movies: response.movies?.map{$0.toDomain()} ?? [],
                     totalPages: response.totalPages)
             }
+            .mapError { $0.toAppError() }
             .eraseToAnyPublisher()
     }
-    public func getGenres() -> AnyPublisher<[Genre], NetworkError> {
+    public func getGenres() -> AnyPublisher<[Genre], AppError> {
         client.getGenres()
             .map{response in
                 response.genres?.map{$0.toDomain()} ?? []
             }
+            .mapError { $0.toAppError() }
+            .catch { _ in Just([]).setFailureType(to: AppError.self) }
             .eraseToAnyPublisher()
     }
 }

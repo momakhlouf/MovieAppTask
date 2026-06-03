@@ -6,12 +6,11 @@
 //
 
 import Foundation
-import Networking
 import Combine
 import CoreModels
 
 public protocol MovieDetailsUseCaseProtocol{
-    func getMovieDetails(id: Int) -> AnyPublisher<MovieDetailsModel, NetworkError>
+    func getMovieDetails(id: Int) -> AnyPublisher<MovieDetailsModel, AppError>
 }
 
 public class MovieDetailsUseCase: MovieDetailsUseCaseProtocol {
@@ -20,7 +19,7 @@ public class MovieDetailsUseCase: MovieDetailsUseCaseProtocol {
     public init(repository: MovieDetailsRepositoryProtocol) {
         self.repository = repository
     }
-   public func getMovieDetails(id: Int) -> AnyPublisher<MovieDetailsModel, NetworkError> {
+   public func getMovieDetails(id: Int) -> AnyPublisher<MovieDetailsModel, AppError> {
         repository.getMovieDetails(id: id)
     }
 }
