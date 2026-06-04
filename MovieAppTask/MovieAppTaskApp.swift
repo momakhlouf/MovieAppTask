@@ -10,7 +10,7 @@ import SwiftUI
 struct MovieAppTaskApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
+            MoviesFlowView()
         }
     }
 }

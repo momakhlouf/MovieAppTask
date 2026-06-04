@@ -9,8 +9,8 @@ import SwiftUI
 import Commons
 import MoviesListModule
 import MovieDetailsModule
-
-struct RootView: View {
+// in real app, i will make flow & coordinator for every feature or tab, and get all in "root tab view"
+struct MoviesFlowView: View {
     @State var coordinator = MovieCoordinator()
     @StateObject private var moviesViewModel =
             MoviesDIContainer.makeMoviesViewModel()
@@ -32,5 +32,5 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView()
+    MoviesFlowView()
 }
