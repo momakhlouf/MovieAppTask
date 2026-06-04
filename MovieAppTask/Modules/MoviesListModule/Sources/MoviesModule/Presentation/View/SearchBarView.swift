@@ -38,4 +38,5 @@ struct SearchBarView: View {
 }
 #Preview {
     MoviesView(viewModel: MoviesDIContainer.makeMoviesViewModel())
+        .environment(MovieCoordinator())
 }

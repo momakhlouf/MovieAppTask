@@ -37,4 +37,5 @@ struct MovieCardView: View {
 
 #Preview {
     MoviesView(viewModel: MoviesDIContainer.makeMoviesViewModel())
+        .environment(MovieCoordinator())
 }

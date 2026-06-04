@@ -28,6 +28,7 @@ public struct MoviesView: View {
 
 #Preview {
     MoviesView(viewModel: MoviesDIContainer.makeMoviesViewModel())
+        .environment(MovieCoordinator())
 }
 
 extension MoviesView{
