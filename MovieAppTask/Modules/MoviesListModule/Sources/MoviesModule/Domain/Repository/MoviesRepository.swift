@@ -32,7 +32,7 @@ public final class MoviesRepository: MovieRepositoryProtocol{
                     totalPages: response.totalPages)
             }
             .catch { (error: NetworkError)  in
-                 self.cache.getMovies(page: currentPage)
+                 self.cache.getMovies()
                     .flatMap { movies -> AnyPublisher<MoviesModel, AppError> in
                         if !movies.isEmpty {
                             return Just(
