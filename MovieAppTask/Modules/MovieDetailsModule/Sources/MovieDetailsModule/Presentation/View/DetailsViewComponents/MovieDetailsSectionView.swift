@@ -68,7 +68,7 @@ struct MovieDetailsSectionView: View {
             Text(title)
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(.gray)
+                .foregroundStyle(.gray)
             
             content()
                 .font(.caption)

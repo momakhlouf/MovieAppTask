@@ -14,7 +14,7 @@ struct SearchBarView: View {
     var body: some View {
         HStack{
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.gray)
+                .foregroundStyle(.gray)
             TextField("Search movies...", text: $searchText)
                 .focused($isKeyboardActive)
             if !searchText.isEmpty {

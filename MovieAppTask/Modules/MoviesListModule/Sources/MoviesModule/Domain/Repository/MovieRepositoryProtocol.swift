@@ -9,6 +9,7 @@ import Combine
 import CoreModels
 public protocol MovieRepositoryProtocol {
     func getMovies(currentPage: Int) -> AnyPublisher<MoviesModel, AppError>
+    func getMoviesCacheFirst(currentPage: Int) -> AnyPublisher<MoviesModel, AppError>
     func searchMovies(searchText: String, searchPage: Int) -> AnyPublisher<MoviesModel, AppError>
     func getGenres() -> AnyPublisher<[Genre], AppError>
   //  func getMovies(currentPage: Int) async throws -> MoviesModel

@@ -14,7 +14,7 @@ struct MovieDetailsHeaderView: View {
             let offset = geo.frame(in: .global).minY
             ImageLoaderView(url: movie.posterURL, contentMode: .fit)
                 .scaledToFill()
-                .frame(width: UIScreen.main.bounds.width,
+                .frame(width: geo.size.width,
                        height: offset > 0 ? 300 + offset : 300)
                 .clipped()
                 .offset(y: offset > 0 ? -offset : 0) // Stick on scroll up

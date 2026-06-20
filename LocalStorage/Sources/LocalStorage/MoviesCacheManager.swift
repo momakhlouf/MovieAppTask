@@ -22,16 +22,12 @@ public final class MoviesCacheManager: MoviesCacheProtocol {
     public init() {}
     
     public func saveMovies(_ movies: [Movie], page: Int) {
-        
       //  guard page <= 3 else { return }
-        
         queue.async {
             autoreleasepool {
                 do {
                     let realm = try Realm()
-                    
                     let objects = movies.map { $0.toRealm(page: page) }
-                    
                     try realm.write {
                         if page == 1{
                             let old = realm.objects(MovieObject.self)
@@ -39,7 +35,6 @@ public final class MoviesCacheManager: MoviesCacheProtocol {
                         }
                         realm.add(objects, update: .modified)
                     }
-                    
                 } catch {
                     // i will handle it later
                     print("Realm save error: \(error)")
@@ -54,12 +49,9 @@ public final class MoviesCacheManager: MoviesCacheProtocol {
                 autoreleasepool {
                     do {
                         let realm = try Realm()
-                        
                         let results = realm.objects(MovieObject.self)
                         let movies = results.map { $0.toDomain() }
-                        
                         promise(.success(Array(movies)))
-                        
                     } catch {
                         print(" Realm fetch error: \(error)")
                         promise(.success([]))

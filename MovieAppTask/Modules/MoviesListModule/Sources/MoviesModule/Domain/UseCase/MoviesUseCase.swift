@@ -22,7 +22,8 @@ public struct MoviesUseCase: MoviesUseCaseProtocol {
         self.repository = repository
     }
     public func getMovies(page: Int) -> AnyPublisher<MoviesModel, AppError> {
-        repository.getMovies(currentPage: page)
+        //repository.getMovies(currentPage: page)
+        repository.getMoviesCacheFirst(currentPage: page)
     }
     public func searchMovies(searchText: String, page: Int) -> AnyPublisher<MoviesModel, AppError> {
         repository.searchMovies(searchText: searchText, searchPage: page)

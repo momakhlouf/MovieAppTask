@@ -43,9 +43,6 @@ extension MoviesViewModel{
                 guard let self else { return }
                 handleMoviesResponse(returnedData, loadMore: loadMore)
                 self.loadingState = movies.isEmpty ? .empty: .complete
-                if returnedData.isFromCache{
-                    self.toastMessage = AppError.offline.userMessage
-                }
             })
             .store(in: &cancellables)
     }

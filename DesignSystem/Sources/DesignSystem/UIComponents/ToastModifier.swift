@@ -21,7 +21,7 @@ public struct ToastModifier: ViewModifier {
                     Text(message)
                         .padding()
                         .background(.yellow.opacity(0.7))
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                         .cornerRadius(10)
                         .padding()
                     Spacer()

@@ -20,7 +20,45 @@ public final class MoviesRepository: MovieRepositoryProtocol{
         self.client = client
         self.cache = cache
     }
-    
+    //cache first
+    public func getMoviesCacheFirst(currentPage: Int) -> AnyPublisher<MoviesModel, AppError> {
+        let cachePublisher = cache.getMovies()
+            .map { movies in
+                MoviesModel(
+                    page: currentPage,
+                    movies: movies,
+                    totalPages: nil,
+                    isFromCache: true
+                )
+            }
+            .setFailureType(to: AppError.self)
+
+        let apiPublisher = client.getMovies(page: currentPage)
+            .map { response in
+                let movies = response.movies?.map { $0.toDomain() } ?? []
+                self.cache.saveMovies(movies, page: currentPage)
+                
+                return MoviesModel(
+                    page: response.page,
+                    movies: movies,
+                    totalPages: response.totalPages,
+                    isFromCache: false
+                )
+            }
+            .mapError { $0.toAppError() }
+
+        if currentPage == 1 {
+            return cachePublisher.append(apiPublisher)
+                .eraseToAnyPublisher()
+        } else {
+            return apiPublisher
+                .eraseToAnyPublisher()
+        }
+//        return cachePublisher
+//            .append(apiPublisher)
+//            .eraseToAnyPublisher()
+    }
+    //api first
     public func getMovies(currentPage: Int) -> AnyPublisher<MoviesModel, AppError> {
         return client.getMovies(page: currentPage)
             .map { response in
@@ -31,27 +69,56 @@ public final class MoviesRepository: MovieRepositoryProtocol{
                     movies: movies,
                     totalPages: response.totalPages)
             }
-            .catch { (error: NetworkError)  in
-                 self.cache.getMovies()
-                    .flatMap { movies -> AnyPublisher<MoviesModel, AppError> in
-                        if !movies.isEmpty {
-                            return Just(
-                                MoviesModel(
-                                    page: currentPage,
-                                    movies: movies,
-                                    totalPages: nil,
-                                    isFromCache: true
+            .catch { (error: NetworkError) in
+                let appError = error.toAppError()
+                
+                switch appError {
+                case .offline, .timedOut:
+                    return self.cache.getMovies()
+                        .flatMap { movies -> AnyPublisher<MoviesModel, AppError> in
+                            if !movies.isEmpty {
+                                return Just(
+                                    MoviesModel(
+                                        page: currentPage,
+                                        movies: movies,
+                                        totalPages: nil,
+                                        isFromCache: true
+                                    )
                                 )
-                            )
-                            .setFailureType(to: AppError.self)
-                            .eraseToAnyPublisher()
+                                .setFailureType(to: AppError.self)
+                                .eraseToAnyPublisher()
+                            }
+                            return Fail(error: appError).eraseToAnyPublisher()
                         }
-                        return Fail(error: error.toAppError())
-                            .eraseToAnyPublisher()
-                    }
-                    .eraseToAnyPublisher()
+                        .eraseToAnyPublisher()
+                    
+                default:
+                    return Fail(error: appError).eraseToAnyPublisher()
+                }
             }
             .eraseToAnyPublisher()
+//            .catch { (error: NetworkError)  in
+//                 self.cache.getMovies()
+//                    .flatMap { movies -> AnyPublisher<MoviesModel, AppError> in
+//                        if !movies.isEmpty {
+//                            return Just(
+//                                MoviesModel(
+//                                    page: currentPage,
+//                                    movies: movies,
+//                                    totalPages: nil,
+//                                    isFromCache: true
+//                                )
+//                            )
+//                            .setFailureType(to: AppError.self)
+//                            .eraseToAnyPublisher()
+//                        }
+        // all errors will be offline!
+//                        return Fail(error: error.toAppError())
+//                            .eraseToAnyPublisher()
+//                    }
+//                    .eraseToAnyPublisher()
+//            }
+//            .eraseToAnyPublisher()
         
     }
     

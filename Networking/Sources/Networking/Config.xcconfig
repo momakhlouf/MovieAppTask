@@ -1,0 +1,12 @@
+//
+//  Config.xcconfig
+//  Networking
+//
+//  Created by Mohamed Makhlouf Ahmed on 13/06/2026.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+API_KEY = 15fe946886608e9b2315244355fb5b94
+BASE_URL = https://api.themoviedb.org/3/

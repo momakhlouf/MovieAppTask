@@ -61,6 +61,7 @@ extension MoviesView{
         case .error(let error):
             EmptyContentView(type: .error(error.userMessage)) {
                 viewModel.getMovies()
+                viewModel.getGenres()
             }
             
         case .loading:

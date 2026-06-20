@@ -39,7 +39,7 @@ public struct EmptyContentView: View {
             if let action {
                 Button("Retry", action: action)
                     .frame(width: 100)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .padding()
                     .background(Color("customYellow", bundle: .module))
                     .cornerRadius(10)
