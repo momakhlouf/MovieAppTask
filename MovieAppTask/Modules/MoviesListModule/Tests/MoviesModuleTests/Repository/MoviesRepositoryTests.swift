@@ -32,7 +32,7 @@ final class MoviesRepositoryTests: XCTestCase {
 
             var cancellables = Set<AnyCancellable>()
 
-            repo.getMovies(currentPage: 1)
+            repo.getMoviesCacheFirst(currentPage: 1)
                 .sink(
                     receiveCompletion: { _ in },
                     receiveValue: { result in

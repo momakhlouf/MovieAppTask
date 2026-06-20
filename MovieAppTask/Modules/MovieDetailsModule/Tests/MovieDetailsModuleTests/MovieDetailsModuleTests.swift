@@ -63,13 +63,4 @@ final class MovieDetailsModuleTests: XCTestCase {
         
         wait(for: [expectation], timeout: 1)
     }
- 
-    func test_navigate_appendsDestinationToPath() {
-        let coordinator = MovieCoordinator()
-        
-        coordinator.navigate(to: .movieDetails(id: 10))
-        
-        XCTAssertEqual(coordinator.path.count, 1)
-    }
-    
 }

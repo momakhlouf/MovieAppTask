@@ -207,6 +207,14 @@ extension MoviesViewModelTests {
 
         XCTAssertEqual(sut.loadingState, .complete)
     }
+    
+    func test_navigate_appendsDestinationToPath() {
+        let coordinator = MovieCoordinator()
+        
+        coordinator.navigate(to: .movieDetails(id: 10))
+        
+        XCTAssertEqual(coordinator.path.count, 1)
+    }
 }
  
 
